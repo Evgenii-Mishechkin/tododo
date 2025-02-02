@@ -28,6 +28,7 @@ cd tododo
 ```
 
 2. Create a .env file in the root directory and add your Firebase configuration:
+
 ```bash
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -37,11 +38,15 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 ```
+
 3. Install dependencies:
+
 ```bash
 npm install
 ```
+
 4. Start the development server:
+
 ```bash
 npm run dev
 # or start the server and open the app in a new browser tab
@@ -50,14 +55,15 @@ npm run dev -- --open
 
 Building
 To create a production version of your app:
+
 ```bash
 npm run build
 ```
+
 You can preview the production build with:
 npm run preview
 
 ### README.md (Русский)
-
 
 # Приложение ToDoDo
 
@@ -86,7 +92,9 @@ npm run preview
 git clone https://github.com/yourusername/tododo-app.git
 cd tododo-app
 ```
+
 2. Создайте файл .env в корневом каталоге и добавьте вашу конфигурацию Firebase:
+
 ```bash
 VITE_FIREBASE_API_KEY=your_api_key
 VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
@@ -96,11 +104,13 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 ```
+
 3.Установите зависимости:
 
 ```bash
 npm install
 ```
+
 4. Запустите сервер разработки:
 
 ```bash
@@ -108,13 +118,16 @@ npm run dev
 # или запустите сервер и откройте приложение в новой вкладке браузера
 npm run dev -- --open
 ```
+
 Сборка
 Для создания производственной версии вашего приложения:
 
 ```bash
 npm run build
 ```
+
 Вы можете просмотреть производственную сборку с помощью:
+
 ```bash
 npm run preview
 ```

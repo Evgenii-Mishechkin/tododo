@@ -5,10 +5,10 @@
 	let { children } = $props();
 </script>
 
-<div class="flex flex-col min-h-screen flex-grow">
-	<Header/>
-	<main class="w-[100%] mx-auto min-h-screen">
+<div class="flex min-h-screen flex-grow flex-col">
+	<Header />
+	<main class="mx-auto min-h-screen w-[100%]">
 		{@render children()}
 	</main>
-	<Footer/>
+	<Footer />
 </div>

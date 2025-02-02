@@ -6,107 +6,103 @@ import { authStore } from './auth';
 
 import type { Todo } from '$lib/types';
 
-
 const createTodoStore = () => {
-  const { subscribe, set, update } = writable<Todo[]>([]);
+	const { subscribe, set, update } = writable<Todo[]>([]);
 
-  return {
-    subscribe,
+	return {
+		subscribe,
 
-    async fetchTodos() {
-      const auth = authStore.getUser();
-      if (!auth) return;
-      
-      const querySnapshot = await getDocs(collection(db, 'users', auth.uid, 'todos'));
-      const todos = querySnapshot.docs.map(docSnap => {
-        const data = docSnap.data();
-        return {
-          id: docSnap.id,
-          text: data.text,
-          description: data.description,
-          completed: data.completed,
-          createdAt: data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt,
-          order: data.order,
-        } as Todo;
-      });
+		async fetchTodos() {
+			const auth = authStore.getUser();
+			if (!auth) return;
 
-      // Sort tasks by order before setting the store
-      todos.sort((a, b) => a.order - b.order);
-      set(todos);
-    },
+			const querySnapshot = await getDocs(collection(db, 'users', auth.uid, 'todos'));
+			const todos = querySnapshot.docs.map((docSnap) => {
+				const data = docSnap.data();
+				return {
+					id: docSnap.id,
+					text: data.text,
+					description: data.description,
+					completed: data.completed,
+					createdAt:
+						data.createdAt && data.createdAt.toDate ? data.createdAt.toDate() : data.createdAt,
+					order: data.order
+				} as Todo;
+			});
 
-    async addTodo(text: string, description: string) {
-      const auth = authStore.getUser();
-      if (!auth) return;
+			// Sort tasks by order before setting the store
+			todos.sort((a, b) => a.order - b.order);
+			set(todos);
+		},
 
-      // Retrieve current todos from the store to compute the new order.
-      const currentTodos = get({ subscribe });
-      const newOrder = currentTodos.length; // Append new task at the end
+		async addTodo(text: string, description: string) {
+			const auth = authStore.getUser();
+			if (!auth) return;
 
-      const newTodo = {
-        text,
-        description: description ?? '',
-        completed: false,
-        createdAt: new Date(),
-        order: newOrder,
-      };
+			// Retrieve current todos from the store to compute the new order.
+			const currentTodos = get({ subscribe });
+			const newOrder = currentTodos.length; // Append new task at the end
 
-      // Use the "todos" collection consistently
-      const docRef = await addDoc(collection(db, 'users', auth.uid, 'todos'), newTodo);
+			const newTodo = {
+				text,
+				description: description ?? '',
+				completed: false,
+				createdAt: new Date(),
+				order: newOrder
+			};
 
-      update(todos => [...todos, { id: docRef.id, ...newTodo }]);
-    },
+			// Use the "todos" collection consistently
+			const docRef = await addDoc(collection(db, 'users', auth.uid, 'todos'), newTodo);
 
-    async toggleComplete(id: string) {
-      const auth = authStore.getUser();
-      if (!auth) return;
+			update((todos) => [...todos, { id: docRef.id, ...newTodo }]);
+		},
 
-      update(todos => {
-        const updatedTodos = todos.map(todo =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        );
+		async toggleComplete(id: string) {
+			const auth = authStore.getUser();
+			if (!auth) return;
 
-        const todo = updatedTodos.find(todo => todo.id === id);
-        if (todo) {
-          // Use the "todos" collection consistently
-          updateDoc(doc(db, 'users', auth.uid, 'todos', id), { completed: todo.completed });
-        }
-        return updatedTodos;
-      });
-    },
+			update((todos) => {
+				const updatedTodos = todos.map((todo) =>
+					todo.id === id ? { ...todo, completed: !todo.completed } : todo
+				);
 
-    async deleteTodo(id: string) {
-      const auth = authStore.getUser();
-      if (!auth) return;
+				const todo = updatedTodos.find((todo) => todo.id === id);
+				if (todo) {
+					// Use the "todos" collection consistently
+					updateDoc(doc(db, 'users', auth.uid, 'todos', id), { completed: todo.completed });
+				}
+				return updatedTodos;
+			});
+		},
 
-      await deleteDoc(doc(db, 'users', auth.uid, 'todos', id));
-      update(todos => todos.filter(todo => todo.id !== id));
-    },
+		async deleteTodo(id: string) {
+			const auth = authStore.getUser();
+			if (!auth) return;
 
-    async updateTodo(id: string, data: { text: string; description: string }) {
-      const auth = authStore.getUser();
-      if (!auth) return;
+			await deleteDoc(doc(db, 'users', auth.uid, 'todos', id));
+			update((todos) => todos.filter((todo) => todo.id !== id));
+		},
 
-      await updateDoc(doc(db, 'users', auth.uid, 'todos', id), data);
-      update(todos =>
-        todos.map(todo =>
-          todo.id === id ? { ...todo, ...data } : todo
-        )
-      );
-    },
+		async updateTodo(id: string, data: { text: string; description: string }) {
+			const auth = authStore.getUser();
+			if (!auth) return;
 
-    // Method to update the order of tasks (e.g. after drag-and-drop)
-    async updateOrder(newTodos: Todo[]) {
-      const auth = authStore.getUser();
-      if (!auth) return;
-      
-      // Persist the new order in Firestore for each task
-      for (const todo of newTodos) {
-        await updateDoc(doc(db, 'users', auth.uid, 'todos', todo.id), { order: todo.order });
-      }
-      set(newTodos);
-    },
-  };
+			await updateDoc(doc(db, 'users', auth.uid, 'todos', id), data);
+			update((todos) => todos.map((todo) => (todo.id === id ? { ...todo, ...data } : todo)));
+		},
+
+		// Method to update the order of tasks (e.g. after drag-and-drop)
+		async updateOrder(newTodos: Todo[]) {
+			const auth = authStore.getUser();
+			if (!auth) return;
+
+			// Persist the new order in Firestore for each task
+			for (const todo of newTodos) {
+				await updateDoc(doc(db, 'users', auth.uid, 'todos', todo.id), { order: todo.order });
+			}
+			set(newTodos);
+		}
+	};
 };
 
 export const todoStore = createTodoStore();

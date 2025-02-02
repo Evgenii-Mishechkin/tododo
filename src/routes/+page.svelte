@@ -1,62 +1,51 @@
-<!-- Home page -->
+<!-- Home.svelte -->
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { authStore } from '$lib/store/auth';
-  import type { AuthState } from '$lib/store/auth';
-  import type {User} from 'firebase/auth';
-
-  
-  let user: User | null = null;
-  let loading = true;
-
-  const unsubscribe = authStore.subscribe(({ user: authUser, loading: authLoading }: AuthState) => {
-    user = authUser;
-    loading = authLoading;
-  });
+	import { goto } from '$app/navigation';
+	import { authStore } from '$lib/store/auth';
 </script>
 
 <svelte:head>
-  <title>Home Page | ToDoDo</title>
+	<title>Home Page | ToDoDo</title>
 </svelte:head>
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-red-300 p-4">
-  <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-lg p-8 max-w-lg text-center">
-    <h1 class="text-4xl font-bold mb-4 text-white drop-shadow-lg">
-      Welcome to ToDoDo
-    </h1>
+<div
+	class="flex min-h-screen items-center justify-center bg-gradient-to-r from-blue-500 to-red-300 p-4"
+>
+	<div
+		class="max-w-lg rounded-lg bg-white bg-opacity-20 p-8 text-center shadow-lg backdrop-blur-md"
+	>
+		<h1 class="mb-4 text-4xl font-bold text-white drop-shadow-lg">Welcome to ToDoDo</h1>
 
-    {#if loading}
-      <p class="text-lg mb-6 text-white drop-shadow-md">Загрузка...</p>
-    {:else}
-      {#if user}
-        <p class="text-lg mb-6 text-white drop-shadow-md">
-          Hello, {user.displayName || user.email}! Welcome to ToDoDo.
-        </p>
-        <button
-          on:click={() => goto('/todo-list')}
-          class="inline-block bg-white text-blue-600 font-semibold px-6 py-3 rounded hover:bg-blue-100 transition"
-        >
-          Go to ToDoDo List
-        </button>
-      {:else}
-        <p class="text-lg mb-6 text-white drop-shadow-md">
-          Please log in or register to start using the application.        </p>
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            on:click={() => goto('/login')}
-            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-          >
-            Log in
-          </button>
-          <button
-            on:click={() => goto('/login')}
-            class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-          >
-            Register
-          </button>
-        </div>
-      {/if}
-    {/if}
-  </div>
+		{#if $authStore.loading}
+			<p class="mb-6 text-lg text-white drop-shadow-md">Загрузка...</p>
+		{:else if $authStore.user}
+			<p class="mb-6 text-lg text-white drop-shadow-md">
+				Hello, {$authStore.user.displayName || $authStore.user.email}! Welcome to ToDoDo.
+			</p>
+			<button
+				on:click={() => goto('/todo-list')}
+				class="inline-block rounded bg-white px-6 py-3 font-semibold text-blue-600 transition hover:bg-blue-100"
+			>
+				Go to ToDoDo List
+			</button>
+		{:else}
+			<p class="mb-6 text-lg text-white drop-shadow-md">
+				Please log in or register to start using the application.
+			</p>
+			<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+				<button
+					on:click={() => goto('/login')}
+					class="rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
+				>
+					Log in
+				</button>
+				<button
+					on:click={() => goto('/login')}
+					class="rounded-md bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
+				>
+					Register
+				</button>
+			</div>
+		{/if}
+	</div>
 </div>
-
