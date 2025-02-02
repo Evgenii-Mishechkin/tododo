@@ -17,12 +17,12 @@ export interface AuthState {
 }
 
 const createAuthStore = () => {
-  // Изначально: пользователь не определён, загрузка идёт
+  // Initially: user is not defined, loading is in progress
   const { subscribe, set, update } = writable<AuthState>({ user: null, loading: true });
 
-  // Следим за изменениями аутентификации
+  // Monitor authentication changes
   onAuthStateChanged(auth, (user) => {
-    // После получения данных от Firebase считаем, что загрузка завершена
+    // After receiving data from Firebase, we consider loading to be complete
     set({ user, loading: false });
   });
 
